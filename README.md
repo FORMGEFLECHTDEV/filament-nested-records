@@ -17,37 +17,58 @@ You can install the package via composer:
 composer require formgeflecht/filament-nested-records
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="filament-nested-records-migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="filament-nested-records-config"
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="filament-nested-records-views"
-```
-
 This is the contents of the published config file:
 
 ```php
 return [
+  'title_column' => 'title'
 ];
 ```
 
 ## Usage
 
+### Update migration-file
+
+Add `parent_id`-field to your resource model.
+
 ```php
-$filament-nested-records = new Formgeflecht\FilamentNestedRecords();
-echo $filament-nested-records->echoPhrase('Hello, Formgeflecht!');
+Schema::table('your_resource_model', function (Blueprint $table) {
+  // ...
+  $table->foreignId('parent_id')->nullable();
+});
+```
+
+### Preparing resource model
+
+Add `Formgeflecht\FilamentNestedRecords\Concerns\HasNestedRecords` trait to resource model.
+
+```php
+use Formgeflecht\FilamentNestedRecords\Concerns\HasNestedRecords;
+
+class YourModel extends Model {
+  use HasNestedRecords;
+  
+  // ...
+}
+```
+
+### Preparing your resource class
+
+After preparing your resource model, you must extend your resource's list-page. You can find your resource's list-pages in the Pages directory of each resource folder:
+
+```php
+use Formgeflecht\FilamentNestedRecords\Resources\Pages\NestedRecords;
+
+class ListPosts extends NestedRecords
+{
+  // ...
+}
 ```
 
 ## Testing
